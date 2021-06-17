@@ -3,20 +3,19 @@ const mongoose = require("mongoose");
 const serviceSchema = new mongoose.Schema({
   title: {
     type: String,
-   
   },
-  price : {
-     type : String,
+  price: {
+    type: String,
   },
   description: {
     type: String,
   },
-  image : {
-    type : String,
+  image: {
+    type: String,
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: new Date("<YYYY-mm-dd>"),
   },
   // user: {
   //   type: mongoose.Types.ObjectId,

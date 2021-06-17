@@ -7,12 +7,7 @@ const checkLogin = require("../middleware/checkLogin");
 //Route Handle
 router.post("/signup", userController.createUser);
 router.post("/login", userController.login);
-router.get(
-  "/users",
-  // checkLogin,
-  // userController.restricted,
-  userController.getAllUsers
-);
+router.get("/users", userController.getAllUsers);
 router.get("/:id", userController.singleUser);
 router.get("/email/:email", checkLogin, userController.getUserByEmail);
 router.delete("/:id", checkLogin, userController.deleteUser);

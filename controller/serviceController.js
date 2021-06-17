@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 const serviceSchema = require("../model/serviceSchema");
 const Service = new mongoose.model("Service", serviceSchema);
-const User = require("../model/userSchema");
+const serviceOrderSchema = require("../model/serviceOrder");
+const serviceOrder = new mongoose.model("Order", serviceOrderSchema);
+const reviewSchema = require("../model/reviewSchema");
+const reviewCustomer = new mongoose.model("Review", reviewSchema);
 
 //Post new service
 
@@ -41,138 +44,23 @@ const getAllServices = (req, res) => {
   });
 };
 
-// const createTodo = async (req, res) => {
-//   const newTodo = new Todo({
-//     ...req.body,
-//     user: req.user._id,
-//     //in populate this user used
-//   });
-//   // console.log(newTodo);
-//   try {
-//     const todo = await newTodo.save();
-//     await User.updateOne(
-//       {
-//         _id: req.user._id,
-//       },
-//       {
-//         $push: {
-//           todos: todo._id,
-//         },
-//       }
-//     );
-//     res.status(200).json({
-//       message: "Todo inserted successfully",
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       error: "There was a server side error!",
-//     });
-//   }
-// };
-
-//post multiple todo
-const createManyTodo = (req, res) => {
-  Todo.insertMany(req.body, (err, data) => {
-    if (err) {
-      res.status(500).json({
-        error: "There was a server side error!",
-      });
-    } else {
-      res.status(200).json({
-        data: data,
-        message: "Todo were inserted successfully!",
-      });
-    }
-  });
-};
-
-//update todo list'
-const updateTodo = (req, res) => {
-  Todo.updateOne(
-    { _id: req.params.id },
-    {
-      $set: { status: "active" },
-    },
-    (err, data) => {
-      if (err) {
-        res.status(500).json({
-          error: "There was a server side error!",
-        });
-      } else {
-        res.status(200).json({
-          data: data,
-          message: "Todo was updated successfully!",
-        });
-      }
-    }
-  );
-};
-
-//update manually
-const updateManyTodo = (req, res) => {
-  Todo.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true, runValidators: true },
-    (err, data) => {
-      if (err) {
-        res.status(500).json({
-          error: "There was a server side error!",
-        });
-      } else {
-        res.status(200).json({
-          data: data,
-          message: "Todo was updated successfully!",
-        });
-      }
-    }
-  );
-};
-
-//get all todo
-const getAllTodo = (req, res) => {
-  Todo.find({})
-    .populate("user", "firstName lastName")
-    .exec((err, data) => {
-      if (err) {
-        res.status(500).json({
-          error: "There was a server side error!",
-        });
-      } else {
-        res.status(200).json({
-          length: data.length,
-          data: data,
-          status: "Success",
-        });
-      }
+const getServiceById = async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    res.status(200).json({
+      status: "success",
+      result: service,
     });
-};
-
-//get Specific todo list
-const getSpecificTodo = (req, res) => {
-  Todo.find({ status: "active" })
-    .select({
-      _id: 0,
-      createdAt: 0,
-    })
-    .limit(2)
-    .exec((err, data) => {
-      if (err) {
-        res.status(500).json({
-          error: "There was a server side error!",
-        });
-      } else {
-        res.status(200).json({
-          length: data.length,
-          data: data,
-          status: "Success",
-        });
-      }
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: "Error",
     });
+  }
 };
 
-//Delete Todo
-const deleteTodo = (req, res) => {
+//Delete service
+const deleteService = (req, res) => {
   Todo.deleteOne({ _id: req.params.id }, (err, data) => {
     if (err) {
       res.status(500).json({
@@ -187,14 +75,19 @@ const deleteTodo = (req, res) => {
   });
 };
 
-//GET active todo list using instance method
-const activeTodo = async (req, res) => {
-  //create document using model
+//service order
+
+const serviceOrderPlaced = async (req, res) => {
+  // console.log(newTodo);
   try {
-    const todo = new Todo();
-    const data = await todo.findActive();
+    const data = new serviceOrder({
+      ...req.body,
+    });
+    console.log(data);
+    await data.save();
     res.status(200).json({
-      data,
+      message: "Order Placed Successfully!",
+      data: data,
     });
   } catch (err) {
     res.status(500).json({
@@ -203,11 +96,34 @@ const activeTodo = async (req, res) => {
   }
 };
 
-const todoFindByJs = async (req, res) => {
+const getServiceByEmail = async (req, res) => {
   try {
-    const data = await Todo.findByJs();
+    const service = await serviceOrder.find({ email: req.params.email });
     res.status(200).json({
-      data,
+      status: "success",
+      result: service,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: "There was a server side error!",
+    });
+  }
+};
+
+//review section
+
+const reviewService = async (req, res) => {
+  // console.log(newTodo);
+  try {
+    const data = new reviewCustomer({
+      ...req.body,
+    });
+    console.log(data);
+    await data.save();
+    res.status(200).json({
+      message: "Customer review added successfully!",
+      data: data,
     });
   } catch (err) {
     res.status(500).json({
@@ -216,29 +132,30 @@ const todoFindByJs = async (req, res) => {
   }
 };
 
-const todoFindByLanguage = async (req, res) => {
-  try {
-    const data = await Todo.find().findByLanguage("React");
-    res.status(200).json({
-      data,
-    });
-  } catch (err) {
-    res.status(500).json({
-      error: "There was a server side error!",
-    });
-  }
+//get customer review
+
+const getAllReview = (req, res) => {
+  reviewCustomer.find({}).exec((err, data) => {
+    if (err) {
+      res.status(500).json({
+        error: "There was a server side error!",
+      });
+    } else {
+      res.status(200).json({
+        length: data.length,
+        data: data,
+        status: "Success",
+      });
+    }
+  });
 };
 
 module.exports = {
   createService,
   getAllServices,
-  createManyTodo,
-  updateTodo,
-  updateManyTodo,
-  getAllTodo,
-  getSpecificTodo,
-  deleteTodo,
-  activeTodo,
-  todoFindByJs,
-  todoFindByLanguage,
+  getServiceById,
+  serviceOrderPlaced,
+  getServiceByEmail,
+  reviewService,
+  getAllReview,
 };

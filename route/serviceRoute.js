@@ -5,6 +5,12 @@ const checkLogin = require("../middleware/checkLogin");
 
 router.post("/add-service", serviceController.createService);
 router.get("/all-service", serviceController.getAllServices);
+router.get("/review", serviceController.getAllReview);
+router.get("/:id", serviceController.getServiceById);
+router.post("/order", serviceController.serviceOrderPlaced);
+router.get("/email/:email", serviceController.getServiceByEmail);
+router.post("/add-review", serviceController.reviewService);
+
 // router.route("/addTodo").post(todoController.createTodo);
 // router.route("/addManyTodo").post(todoController.createManyTodo);
 // router.route("updateOne/:id").put(todoController.updateTodo);

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 const app = require("./app");
 const DATABASE = process.env.DATABASE;
+const DB_PATH = process.env.DB_PATH;
 
 mongoose
   .connect(DATABASE, {
