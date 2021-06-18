@@ -4,7 +4,7 @@ dotenv.config({ path: "./config.env" });
 const app = require("./app");
 const DATABASE = process.env.DATABASE;
 const DB_PATH = process.env.DB_PATH;
-
+//DB_PATH = mongodb+srv://faisalrahman:faisalrahman6472@cluster0.gmdhy.mongodb.net/luxury-service?retryWrites=true&w=majority
 mongoose
   .connect(DATABASE, {
     useCreateIndex: true,
