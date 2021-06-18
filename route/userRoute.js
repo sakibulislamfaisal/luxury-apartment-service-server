@@ -5,6 +5,8 @@ const userController = require("../controller/userController");
 const checkLogin = require("../middleware/checkLogin");
 
 //Route Handle
+router.post("/admin-signup", userController.createAdmin);
+router.post("/admin-login", userController.adminLogin);
 router.post("/signup", userController.createUser);
 router.post("/login", userController.login);
 router.get("/users", userController.getAllUsers);

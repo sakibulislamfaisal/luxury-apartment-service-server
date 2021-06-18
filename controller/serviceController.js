@@ -96,6 +96,25 @@ const serviceOrderPlaced = async (req, res) => {
   }
 };
 
+
+//get service order     
+const getAllServiceOrder = (req, res) => {
+  serviceOrder.find({}).exec((err, data) => {
+    if (err) {
+      res.status(500).json({
+        error: "There was a server side error!",
+      });
+    } else {
+      res.status(200).json({
+        length: data.length,
+        data: data,
+        status: "Success",
+      });
+    }
+  });
+};
+
+
 const getServiceByEmail = async (req, res) => {
   try {
     const service = await serviceOrder.find({ email: req.params.email });
@@ -158,4 +177,5 @@ module.exports = {
   getServiceByEmail,
   reviewService,
   getAllReview,
+  getAllServiceOrder
 };

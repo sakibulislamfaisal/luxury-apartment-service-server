@@ -6,7 +6,8 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "../config.env" });
 const userSchema = require("../model/userSchema");
 const User = new mongoose.model("User", userSchema);
-const loginValidation = require("../utils/validation/login");
+const adminSchema = require("../model/adminSchema");
+const Admin = new mongoose.model("Admin", adminSchema);
 const serverError = require("../utils/errorHandle/error");
 const router = express.Router();
 
@@ -252,6 +253,106 @@ const restricted = (req, res, next) => {
   }
 };
 
+//add admin
+
+const createAdmin = async (req, res) => {
+  //show error message in this object
+  const errors = {};
+  try {
+    const { email, role, password } = req.body;
+    const adminExists = await Admin.findOne({ email: email });
+    if (adminExists) {
+      errors.email = "Email Already Exist!";
+      return res.json({ message: errors.email });
+    }
+    const newAdmin = new Admin({
+      email,
+      role,
+      password,
+    });
+    const accessToken = jwt.sign(
+      {
+        userId: newAdmin._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.jwtExpire }
+    );
+    newAdmin.accessToken = accessToken;
+    bcrypt.genSalt(10, (err, salted) => {
+      if (!err) {
+        bcrypt.hash(newAdmin.password, salted, (err, hash) => {
+          newAdmin.password = hash;
+          newAdmin.save().then((result) => {
+            res.status(201).json({
+              result,
+              accessToken: `Bearer ${accessToken}`,
+              message: "Admin Register is successful!",
+            });
+          });
+        });
+      } else {
+        res.status(500).json({
+          message: "Signup failed!!",
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Signup failed!",
+    });
+  }
+};
+
+//admin login
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+    Admin.findOne({ email })
+      .then((admin) => {
+        if (!admin) {
+          return res.json({ status: "fail", email: "This email not found!" });
+        }
+        bcrypt.compare(password, admin.password, (err, data) => {
+          if (!err) {
+            if (data) {
+              const payload = {
+                adminId: admin._id,
+                email: admin.email,
+                password: admin.password,
+                role: admin.role,
+              };
+              const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: process.env.jwtExpire,
+              });
+
+              return res.status(200).json({
+                result: {
+                  adminId: admin._id,
+                  email: admin.email,
+                  password: admin.password,
+                  role: admin.role,
+                },
+                access_token: `Bearer ${token}`,
+                status: "success",
+                message: "Admin Login is successful!",
+              });
+            }
+            return res.json({
+              status: "fail",
+              passMsg: "Password does not match",
+            });
+          }
+        });
+      })
+      .catch((err) => serverError(res, err));
+  } catch (err) {
+    res.status(401).json({
+      error: "Authentication failed!",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -261,4 +362,6 @@ module.exports = {
   updateUser,
   login,
   restricted,
+  createAdmin,
+  adminLogin,
 };
