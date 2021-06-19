@@ -8,6 +8,8 @@ const userSchema = require("../model/userSchema");
 const User = new mongoose.model("User", userSchema);
 const adminSchema = require("../model/adminSchema");
 const Admin = new mongoose.model("Admin", adminSchema);
+const adminEmailSchema = require("../model/adminEmailSchema");
+const AdminEmail = new mongoose.model("AdminEmail", adminEmailSchema);
 const serverError = require("../utils/errorHandle/error");
 const router = express.Router();
 
@@ -353,6 +355,33 @@ const adminLogin = async (req, res) => {
   }
 };
 
+//make admin
+const makeAdmin = async (req, res) => {
+  try {
+    const errors = {};
+    const { email } = req.body;
+    const userExists = await AdminEmail.findOne({ email: email });
+    if (userExists) {
+      errors.email = "Email Already Exist!";
+      return res.json({ message: errors.email });
+    }
+    const newUser = new AdminEmail({
+      email,
+    });
+    newUser.save().then((result) => {
+      res.status(201).json({
+        result,
+        message: "Admin Register is successful!",
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Signup failed!",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -364,4 +393,5 @@ module.exports = {
   restricted,
   createAdmin,
   adminLogin,
+  makeAdmin,
 };
