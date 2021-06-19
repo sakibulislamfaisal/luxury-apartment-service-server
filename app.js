@@ -14,18 +14,18 @@ app.use(cors());
 app.use("/api/user", userRoute);
 app.use("/api/service", serviceRoute);
 
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept,Authorization"
-//   );
-//   res.header(
-//     "Access-Control-Allow-Methods",
-//     "GET,PUT,PATCH,POST,DELETE,OPTIONS"
-//   );
-//   next();
-// });
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept,Authorization"
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,PUT,PATCH,POST,DELETE,OPTIONS"
+  );
+  next();
+});
 //GET API INITIALIZE
 app.get("/", (req, res) => {
   res.send(

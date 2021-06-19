@@ -15,7 +15,7 @@ const serviceSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date("<YYYY-mm-dd>"),
+    default: Date.now(),
   },
   // user: {
   //   type: mongoose.Types.ObjectId,

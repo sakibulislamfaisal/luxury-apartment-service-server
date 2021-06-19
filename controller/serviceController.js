@@ -14,7 +14,7 @@ const createService = async (req, res) => {
     const data = new Service({
       ...req.body,
     });
-    console.log(data);
+    console.log("service data", data);
     await data.save();
     res.status(200).json({
       message: "Service Data inserted successfully",
@@ -96,8 +96,7 @@ const serviceOrderPlaced = async (req, res) => {
   }
 };
 
-
-//get service order     
+//get service order
 const getAllServiceOrder = (req, res) => {
   serviceOrder.find({}).exec((err, data) => {
     if (err) {
@@ -113,7 +112,6 @@ const getAllServiceOrder = (req, res) => {
     }
   });
 };
-
 
 const getServiceByEmail = async (req, res) => {
   try {
@@ -177,5 +175,5 @@ module.exports = {
   getServiceByEmail,
   reviewService,
   getAllReview,
-  getAllServiceOrder
+  getAllServiceOrder,
 };
